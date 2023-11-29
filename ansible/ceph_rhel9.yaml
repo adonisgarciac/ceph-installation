@@ -1,0 +1,45 @@
+---
+- name:  Prerequisites ceph in rhel9
+  hosts: all
+  become: true
+  vars:
+    rh_username: XXX
+    rh_password: XXX
+
+  tasks:
+    - name: Register
+      community.general.redhat_subscription:
+        state: present
+        username: "{{ rh_username }}"
+        password: "{{ rh_password }}"
+        auto_attach: true
+
+    - name: Enable manage_repos
+      ansible.builtin.command:
+        cmd: subscription-manager config --rhsm.manage_repos=1
+
+    - name: Enable repositories
+      community.general.rhsm_repository:
+        name: "{{ item }}"
+      loop:
+        - rhceph-5-tools-for-rhel-9-x86_64-rpms
+
+    - name: Install packages
+      ansible.builtin.yum:
+        name: "{{ item }}"
+      loop:
+        - podman
+        - lvm2
+        - chrony
+        - cephadm
+
+    - name: Install packages
+      ansible.builtin.yum:
+        name: "*"
+        state: latest
+      notify: reboot
+
+  handlers:
+    - name: reboot
+      ansible.builtin.reboot:
+...
