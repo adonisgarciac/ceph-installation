@@ -62,6 +62,7 @@ export registryuser=XXX
 export registrypass=XXX
 
 cephadm --image registry.redhat.io/rhceph/rhceph-5-rhel8:5-433 bootstrap --apply-spec initial-config.yaml --mon-ip $mon_ip --ssh-public-key ~/.ssh/id_rsa_aws_terraform.pub --ssh-private-key ~/.ssh/id_rsa_aws_terraform --registry-url registry.redhat.io --registry-username $registryuser --registry-password $registrypass --initial-dashboard-password=redhat --dashboard-password-noupdate --allow-fqdn-hostname --ssh-user ec2-user
+```
 
 ### Upgrade ceph 5 to ceph 6
 
