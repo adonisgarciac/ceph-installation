@@ -210,8 +210,11 @@ resource "aws_security_group_rule" "allow-ssh" {
   security_group_id = "${var.security_group_id}"
 }
 
-resource "aws_route" "internet-route" {
-  route_table_id            = "${var.route_table_id}"
-  destination_cidr_block    = "0.0.0.0/0"
-  gateway_id                = aws_internet_gateway.gw.id
+resource "aws_route_table" "my_route_table" {
+  vpc_id = aws_vpc.my_vpc.id
+
+  route {
+    cidr_block                = "0.0.0.0/0"
+    gateway_id                = aws_internet_gateway.gw.id
+  }
 }

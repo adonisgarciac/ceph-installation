@@ -44,9 +44,6 @@ variable "public_key_path" {
 }
 
 variable "security_group_id" {
-        default = "sg-05ce699324f7dcbd4"
+        default = "sg-0a7319fc17e9b2793"
 }
 
-variable "route_table_id" {
-        default = "rtb-07b874a3cc6c84f8d"
-}
