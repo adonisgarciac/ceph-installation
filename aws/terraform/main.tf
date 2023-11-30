@@ -15,7 +15,7 @@ provider "aws" {
   region = "${var.region}"
 }
 resource "aws_internet_gateway" "gw" {
-  vpc_id = aws_vpc.my_vpc.id
+  vpc_id = aws_vpc.ceph_vpc.id
 
   tags = {
     Name = "main"
@@ -23,8 +23,8 @@ resource "aws_internet_gateway" "gw" {
 }
 
 # VPC
-resource "aws_vpc" "my_vpc" {
-  cidr_block = "10.0.0.0/16"
+resource "aws_vpc" "ceph_vpc" {
+  cidr_block = "10.10.0.0/16"
   enable_dns_support = true
   enable_dns_hostnames = true
 
@@ -35,8 +35,8 @@ resource "aws_vpc" "my_vpc" {
 
 # Subnet A
 resource "aws_subnet" "subneta" {
-  vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = "10.0.1.0/24"
+  vpc_id                  = aws_vpc.ceph_vpc.id
+  cidr_block              = "10.10.1.0/24"
   availability_zone       = "${var.availability_zonea}"
 
   tags = {
@@ -46,8 +46,8 @@ resource "aws_subnet" "subneta" {
 
 # Subnet B
 resource "aws_subnet" "subnetb" {
-  vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = "10.0.2.0/24"
+  vpc_id                  = aws_vpc.ceph_vpc.id
+  cidr_block              = "10.10.2.0/24"
   availability_zone       = "${var.availability_zoneb}"
 
   tags = {
@@ -57,8 +57,8 @@ resource "aws_subnet" "subnetb" {
 
 # Subnet C
 resource "aws_subnet" "subnetc" {
-  vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = "10.0.3.0/24"
+  vpc_id                  = aws_vpc.ceph_vpc.id
+  cidr_block              = "10.10.3.0/24"
   availability_zone       = "${var.availability_zonec}"
 
   tags = {
@@ -201,17 +201,8 @@ resource "aws_eip" "publicc1" {
   instance = aws_instance.cephc1.id
 }
 
-resource "aws_security_group_rule" "allow-ssh" {
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]  # Allow SSH traffic from any IP address (consider restricting this to a specific IP range for security)
-  security_group_id = "${var.security_group_id}"
-}
-
 resource "aws_route_table" "my_route_table" {
-  vpc_id = aws_vpc.my_vpc.id
+  vpc_id = aws_vpc.ceph_vpc.id
 
   route {
     cidr_block                = "0.0.0.0/0"

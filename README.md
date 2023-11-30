@@ -23,6 +23,8 @@ terraform init
 terraform apply
 ```
 
+2. Create a route to access to internet
+
 ### Configure instance requirements using ansible
 > **_NOTE:_**  Prerequisites: ansible-core and community.general collection
 

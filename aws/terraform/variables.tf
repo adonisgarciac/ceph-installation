@@ -42,8 +42,3 @@ variable "region" {
 variable "public_key_path" {
         default = "/home/agarciac/.ssh/id_rsa_aws_terraform.pub"
 }
-
-variable "security_group_id" {
-        default = "sg-0a7319fc17e9b2793"
-}
-
