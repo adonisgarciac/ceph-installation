@@ -1,6 +1,7 @@
+---
 service_type: host
-addr: 10.0.1.129
-hostname: ip-10-0-1-129.eu-central-1.compute.internal
+addr: 10.10.1.191
+hostname: ip-10-10-1-129.eu-central-1.compute.internal
 location:
   root: default
   datacenter: DC1
@@ -8,21 +9,10 @@ labels:
   - osd
   - mon
   - mgr
-  - rgw
 ---
 service_type: host
-addr: 10.0.1.164
-hostname: ip-10-0-1-164.eu-central-1.compute.internal
-location:
-  datacenter: DC1
-labels:
-  - osd
-  - mon
-  - mds
----
-service_type: host
-addr: 10.0.2.158
-hostname: ip-10-0-2-158.eu-central-1.compute.internal
+addr: 10.10.2.162
+hostname: ip-10-10-2-162.eu-central-1.compute.internal
 location:
   root: default
   datacenter: DC2
@@ -30,32 +20,17 @@ labels:
   - osd
   - mon
   - mgr
-  - rgw
 ---
 service_type: host
-addr: 10.0.2.119
-hostname: ip-10-0-2-119.eu-central-1.compute.internal
-location:
-  datacenter: DC2
+addr: 10.10.3.46
+hostname: ip-10-10-3-46.eu-central-1.compute.internal
 labels:
+  - mon
   - osd
-  - mon
-  - mds
----
-service_type: host
-addr: 10.0.3.221
-hostname: ip-10-0-3-221.eu-central-1.compute.internal
-labels:
-  - mon
 ---
 service_type: mon
 placement:
   label: "mon"
----
-service_type: mds
-service_id: cephfs
-placement:
-  label: "mds"
 ---
 service_type: mgr
 service_name: mgr
@@ -70,10 +45,4 @@ placement:
 spec:
   data_devices:
     all: true
----
-service_type: rgw
-service_id: rgw
-placement:
-  count: 2
-  label: "rgw"
 ...

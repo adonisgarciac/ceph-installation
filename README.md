@@ -23,47 +23,43 @@ terraform init
 terraform apply
 ```
 
-2. Create a route to access to internet
-
 ### Configure instance requirements using ansible
-> **_NOTE:_**  Prerequisites: ansible-core and community.general collection
-
+> **_NOTE:_** ansible-core and community.general collection are required
 1. Create an ansible inventory
 ```
-cd ansible/
-export IPCEPHA1=18.157.83.78
-export IPCEPHA2=18.153.190.74
-export IPCEPHB1=18.153.46.105
-export IPCEPHB2=3.78.134.88
-export IPCEPHC1=3.79.199.136
+cd ../../ansible
+export IPCEPHA1=3.72.179.192
+export IPCEPHB1=3.79.136.36
+export IPCEPHC1=3.79.196.207
 
 cat > inventory <<EOF
 $IPCEPHA1 ansible_user=ec2-user  ansible_ssh_private_key_file=~/.ssh/id_rsa_aws_terraform
-$IPCEPHA2 ansible_user=ec2-user  ansible_ssh_private_key_file=~/.ssh/id_rsa_aws_terraform
 $IPCEPHB1 ansible_user=ec2-user  ansible_ssh_private_key_file=~/.ssh/id_rsa_aws_terraform
-$IPCEPHB2 ansible_user=ec2-user  ansible_ssh_private_key_file=~/.ssh/id_rsa_aws_terraform
 $IPCEPHC1 ansible_user=ec2-user  ansible_ssh_private_key_file=~/.ssh/id_rsa_aws_terraform
 EOF
 ```
 
-2. Launch ansible playbook
-Upload ansible/ceph_rhel9.yaml to node with public ip
-Change Red Hat user and password
+2.  Install ansible dependencies and Launch ansible playbook
+> **_NOTE:_**  Change Red Hat user and password
 ```
 export ANSIBLE_HOST_KEY_CHECKING=false
 ansible-playbook -i inventory ceph_rhel9.yaml
 ```
 
 ### Launch ceph 5 installation
-Connect to cepha1 as adm node
-Upload to cepha1 initial-config.yaml and modify hostname information
-Upload to cepha1 id_rsa_aws_terraform and id_rsa_aws_terraform.pub
+Connect to cepha1
+> **_NOTE:_** upload inital-config.yaml, ~/.ssh/id_rsa_aws_terraform and ~/.ssh/id_rsa_aws_terraform.pub
 ```
-export mon_ip=10.0.1.129
+export mon_ip=10.10.1.191
 export registryuser=XXX
 export registrypass=XXX
 
-cephadm --image registry.redhat.io/rhceph/rhceph-5-rhel8:5-433 bootstrap --apply-spec initial-config.yaml --mon-ip $mon_ip --ssh-public-key ~/.ssh/id_rsa_aws_terraform.pub --ssh-private-key ~/.ssh/id_rsa_aws_terraform --registry-url registry.redhat.io --registry-username $registryuser --registry-password $registrypass --initial-dashboard-password=redhat --dashboard-password-noupdate --allow-fqdn-hostname --ssh-user ec2-user
+sudo cephadm --image registry.redhat.io/rhceph/rhceph-5-rhel8:5-433 bootstrap --apply-spec initial-config.yaml --mon-ip $mon_ip --ssh-public-key ~/.ssh/id_rsa_aws_terraform.pub --ssh-private-key ~/.ssh/id_rsa_aws_terraform --registry-url registry.redhat.io --registry-username $registryuser --registry-password $registrypass --initial-dashboard-password=redhat --dashboard-password-noupdate --allow-fqdn-hostname --ssh-user ec2-user
+
+sudo cephadm shell
+ceph config set mon public_network 10.10.0.0/16
+ceph orch restart mon
+
 ```
 
 ### Upgrade ceph 5 to ceph 6

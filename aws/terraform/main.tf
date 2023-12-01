@@ -77,16 +77,16 @@ resource "aws_instance" "cepha1" {
   }
 }
 
-resource "aws_instance" "cepha2" {
-  ami = "${var.ami_id}"
-  availability_zone = "${var.availability_zonea}"
-  instance_type = "${var.instance_type}"
-  key_name = "terraform_ec2_key"
-  subnet_id = aws_subnet.subneta.id
-  tags = {
-    Name = "cepha2"
-  }
-}
+#resource "aws_instance" "cepha2" {
+#  ami = "${var.ami_id}"
+#  availability_zone = "${var.availability_zonea}"
+#  instance_type = "${var.instance_type}"
+#  key_name = "terraform_ec2_key"
+#  subnet_id = aws_subnet.subneta.id
+#  tags = {
+#    Name = "cepha2"
+#  }
+#}
 
 resource "aws_instance" "cephb1" {
   ami = "${var.ami_id}"
@@ -99,16 +99,16 @@ resource "aws_instance" "cephb1" {
   }
 }
 
-resource "aws_instance" "cephb2" {
-  ami = "${var.ami_id}"
-  availability_zone = "${var.availability_zoneb}"
-  instance_type = "${var.instance_type}"
-  key_name = "terraform_ec2_key"
-  subnet_id = aws_subnet.subnetb.id
-  tags = {
-    Name = "cephb2"
-  }
-}
+#resource "aws_instance" "cephb2" {
+#  ami = "${var.ami_id}"
+#  availability_zone = "${var.availability_zoneb}"
+#  instance_type = "${var.instance_type}"
+#  key_name = "terraform_ec2_key"
+#  subnet_id = aws_subnet.subnetb.id
+#  tags = {
+#    Name = "cephb2"
+#  }
+#}
 
 resource "aws_instance" "cephc1" {
   ami = "${var.ami_id}"
@@ -140,20 +140,35 @@ resource "aws_volume_attachment" "cepha1-vol" {
   instance_id = "${aws_instance.cepha1.id}"
 }
 
-resource "aws_ebs_volume" "cepha2-vol" {
-  availability_zone = "${var.availability_zonea}"
+resource "aws_ebs_volume" "cephc1-vol" {
+  availability_zone = "${var.availability_zonec}"
   size = 100
   tags = {
-        Name = "cepha2-volume"
+        Name = "cephc1-volume"
  }
-
 }
 
-resource "aws_volume_attachment" "cepha2-vol" {
+resource "aws_volume_attachment" "cephc1-vol" {
   device_name = "/dev/sdc"
-  volume_id = "${aws_ebs_volume.cepha2-vol.id}"
-  instance_id = "${aws_instance.cepha2.id}"
+  volume_id = "${aws_ebs_volume.cephc1-vol.id}"
+  instance_id = "${aws_instance.cephc1.id}"
 }
+
+
+#resource "aws_ebs_volume" "cepha2-vol" {
+#  availability_zone = "${var.availability_zonea}"
+#  size = 100
+#  tags = {
+#        Name = "cepha2-volume"
+# }
+#
+#}
+#
+#resource "aws_volume_attachment" "cepha2-vol" {
+#  device_name = "/dev/sdc"
+#  volume_id = "${aws_ebs_volume.cepha2-vol.id}"
+#  instance_id = "${aws_instance.cepha2.id}"
+#}
 
 resource "aws_ebs_volume" "cephb1-vol" {
   availability_zone = "${var.availability_zoneb}"
@@ -161,7 +176,6 @@ resource "aws_ebs_volume" "cephb1-vol" {
   tags = {
         Name = "cephb1-volume"
  }
-
 }
 
 resource "aws_volume_attachment" "cephb1-vol" {
@@ -170,33 +184,34 @@ resource "aws_volume_attachment" "cephb1-vol" {
   instance_id = "${aws_instance.cephb1.id}"
 }
 
-resource "aws_ebs_volume" "cephb2-vol" {
-  availability_zone = "${var.availability_zoneb}"
-  size = 100
-  tags = {
-        Name = "cephb2-volume"
- }
 
-}
 
-resource "aws_volume_attachment" "cephb2-vol" {
-  device_name = "/dev/sdc"
-  volume_id = "${aws_ebs_volume.cephb2-vol.id}"
-  instance_id = "${aws_instance.cephb2.id}"
-}
+#resource "aws_ebs_volume" "cephb2-vol" {
+#  availability_zone = "${var.availability_zoneb}"
+#  size = 100
+#  tags = {
+#        Name = "cephb2-volume"
+# }
+#}
+#
+#resource "aws_volume_attachment" "cephb2-vol" {
+#  device_name = "/dev/sdc"
+#  volume_id = "${aws_ebs_volume.cephb2-vol.id}"
+#  instance_id = "${aws_instance.cephb2.id}"
+#}
 
 resource "aws_eip" "publica1" {
   instance = aws_instance.cepha1.id
 }
-resource "aws_eip" "publica2" {
-  instance = aws_instance.cepha2.id
-}
+#resource "aws_eip" "publica2" {
+#  instance = aws_instance.cepha2.id
+#}
 resource "aws_eip" "publicb1" {
   instance = aws_instance.cephb1.id
 }
-resource "aws_eip" "publicb2" {
-  instance = aws_instance.cephb2.id
-}
+#resource "aws_eip" "publicb2" {
+#  instance = aws_instance.cephb2.id
+#}
 resource "aws_eip" "publicc1" {
   instance = aws_instance.cephc1.id
 }
@@ -205,7 +220,48 @@ resource "aws_route_table" "my_route_table" {
   vpc_id = aws_vpc.ceph_vpc.id
 
   route {
-    cidr_block                = "0.0.0.0/0"
-    gateway_id                = aws_internet_gateway.gw.id
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.gw.id
+  }
+  tags = {
+    Name = "my_route_table"
+  }
+}
+
+resource "aws_route_table_association" "a" {
+  subnet_id      = aws_subnet.subneta.id
+  route_table_id = aws_route_table.my_route_table.id
+}
+resource "aws_route_table_association" "b" {
+  subnet_id      = aws_subnet.subnetb.id
+  route_table_id = aws_route_table.my_route_table.id
+}
+resource "aws_route_table_association" "c" {
+  subnet_id      = aws_subnet.subnetc.id
+  route_table_id = aws_route_table.my_route_table.id
+}
+
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.ceph_vpc.id
+
+  ingress {
+    protocol  = -1
+    self      = true
+    from_port = 0
+    to_port   = 0
+  }
+
+  ingress{
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Allow SSH traffic from any IP address (consider restricting this to a specific IP range for security)
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
